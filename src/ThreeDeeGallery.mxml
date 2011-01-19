@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	applicationComplete="startALbum()"
+	layout="absolute"
+	backgroundColor="#000000">
+	<mx:Style source="album.css"/>
+	<mx:Script>
+		<![CDATA[
+			import caurina.transitions.Tweener;
+			import includes.FlickrSearchGallery;
+			import includes.AlbumImage;
+			import mx.events.DragEvent;
+			import mx.events.SliderEvent;
+			import mx.events.ListEvent;
+			import includes.Album;
+			import mx.rpc.events.ResultEvent;
+			import mx.events.ResizeEvent;
+			
+			[Bindable]
+			private var space:Space;
+			[Bindable]
+			private var album:Album;
+			private var params:Object = new Object();
+			private var slider_x:Number = 0;
+			
+			private function searchComplete(gallery:XML):void {
+                if (!space) {
+                    album = new Album(this);
+                    album.app = this;
+                    addEventListener(MouseEvent.MOUSE_WHEEL, doMouseWheel);
+                    stage.addEventListener(FullScreenEvent.FULL_SCREEN, onFullScreenChange);
+                    scroller.enabled = true;
+	                space = new Space(album, width, height);
+	                spriteContainer.addChild(space);
+                }
+                album.album_data = gallery;
+                space.createScene();
+			}
+
+			private function onFullScreenChange(event:FullScreenEvent):void {
+				buttonFS.visible = !event.fullScreen;
+			}
+
+			private function doMouseWheel(event:MouseEvent):void {
+				var fov:Number = space.camera.fov;
+				Tweener.addTween(space.camera, {fov: Math.min(180, Math.max(1, fov - event.delta / 5))});
+			}
+
+			public function startALbum():void {
+				scroller.getThumbAt(0).width = 20;
+				scroller.getThumbAt(0).height = 20;
+				search(query.text);
+			}
+
+			private function search(q:String):void {
+				var searcher:FlickrSearchGallery = new FlickrSearchGallery();
+				searcher.search(q, searchComplete);
+			}
+			
+			private function scrollImages(event:SliderEvent):void {
+				scrollImagesTo(event.value);
+			}
+
+			public function scrollImagesTo(new_x:Number):void {
+				space.resetCurrentImage();
+				space.scrollTo(new_x, space.start_cam_y, new_x - slider_x);
+				slider_x = new_x;
+			}
+			
+			public function populateInfo(image:AlbumImage):void {
+				if (image != null) {
+				    imageName.text = image.name;
+				} else {
+					imageName.text = "";
+				}
+			}
+
+			private function goFullScreen(event:MouseEvent):void {
+				stage.displayState = StageDisplayState.FULL_SCREEN;
+			}			
+		]]>
+	</mx:Script>
+	<mx:UIComponent id="spriteContainer" bottom="0" top="0" click="return;space.resetItemHandler(event);" width="100%" x="0"/>
+	<mx:HSlider id="scroller"
+		left="10" right="58" minimum="0" maximum="200" change="scrollImages(event);" liveDragging="true" allowTrackClick="true" enabled="false" fillAlphas="[0.5, 0.59, 0.81, 0.7]" alpha="0.71" themeColor="#151515" showDataTip="false" bottom="10"/>
+	<mx:Button id="buttonFS" label="FS" click="goFullScreen(event);" right="10" buttonMode="true" useHandCursor="true" bottom="10"/>
+	<mx:Label id="imageName" text="" y="9" height="22" color="#E8E8E8" textAlign="left" fontFamily="Verdana" fontSize="14" left="10" right="345"/>
+	<mx:TextInput id="query" right="91" top="12" cornerRadius="10" editable="true" enabled="true" borderStyle="solid" width="214" enter="search(query.text);" text="Skyline" textIndent="4" fontFamily="Verdana" fontSize="12"/>
+	<mx:Button label="Search" right="10" top="10" click="search(query.text);" enabled="true" icon="@Embed(source='../icons/Flickr_20x20.png')"/>
+</mx:Application>

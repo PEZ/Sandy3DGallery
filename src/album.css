@@ -1,0 +1,24 @@
+/* CSS file */
+Application {
+	backgroundColor: #000000;
+	backgroundGradientColors: #000000, #000000;
+	paddingTop: 0;
+	paddingLeft: 0;
+	paddingRight: 0;
+	paddingBottom: 0;
+	color: #111111;
+}
+
+Button { 
+   cornerRadius: 1;
+   paddingLeft: 3;
+   paddingRight: 3;
+   paddingTop: 3;
+   paddingBottom: 3;
+   fillAlphas: 1, 1, 1, 1;
+   fillColors: #000000, #000000, #000000, #000000;
+   color: #ffffff;
+   textRollOverColor: #cccccc;
+   borderColor: #ffffff;
+   themeColor: #cccccc;
+}
