@@ -10,7 +10,7 @@ package includes {
 		public function FlickrSearchGallery() {
 			service.url = 'http://api.flickr.com/services/rest/';
 			service.request.method='flickr.photos.search';
-			service.request.api_key='eae1a90b9a7b5b00c998a35c2a6335c5';
+			service.request.api_key=Your Flickr API key here;
 			service.request.per_page='180';
 			service.request.extras='o_dims,url_t,url_m,url_o';
             service.resultFormat = 'xml';
